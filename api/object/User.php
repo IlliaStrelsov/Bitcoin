@@ -9,6 +9,7 @@ class User
     public function create()
     {
         if (!empty($this->email)  && !empty($this->password)) {
+            $this->password = password_hash($this->password,PASSWORD_DEFAULT,['cost' => 12]);
             $text = $this->email . "," . $this->password . "\n";
             $fp = fopen('accounts.txt', 'a+');
             if (fwrite($fp, $text)) {
@@ -22,17 +23,33 @@ class User
         }
     }
 
-    public function signin()
-    {
+    public function uniqueEmailFound(){
         $all_ids = explode("\n", file_get_contents("accounts.txt"));
-        $check_value = $this->email . "," . $this->password;
-
-        if (in_array($check_value, $all_ids)) {
-            return true;
-        } else {
-            return false;
+        foreach ($all_ids as $item){
+            $arr = explode(',',$item);
+            if(in_array($this->email,$arr)){
+                return false;
+            }
         }
+        return true;
+
 
     }
 
+    public function signin()
+    {
+        $all_ids = explode("\n", file_get_contents("accounts.txt"));
+        foreach ($all_ids as $item) {
+            $arr = explode(',', $item);
+            if ($arr[0] === $this->email) {
+                if (password_verify($this->password, $arr[1])) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        }
+        return false;
+
+    }
 }
