@@ -11,7 +11,7 @@ ini_set('display_errors', '1');
 ini_set('display_startup_errors', '1');
 error_reporting(E_ALL);
 include_once 'config/core.php';
-include_once 'BTNcurency.php';
+include_once 'BtcCurrency.php';
 include_once 'lib-jwt/src/BeforeValidException.php';
 include_once 'lib-jwt/src/ExpiredException.php';
 include_once 'lib-jwt/src/SignatureInvalidException.php';
@@ -30,13 +30,12 @@ if($jwt){
         $decode = JWT::decode($jwt,$key,array('HS256'));
 
         http_response_code(200);
-        $btc = new BTNcurency();
+        $btc = new BtcCurrency();
 
         $btcRateUA =  $btc->getBtncurrencyInGrivnas();
 
         echo json_encode(array(
             "message" => $btcRateUA,
-            "data" => $decode->data
         ));
     }catch (Exception $e){
 
